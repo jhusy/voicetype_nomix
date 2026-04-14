@@ -270,6 +270,20 @@
       </div>
 
       <div class="section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <div class="section-label" style="margin:0">OpenRouter API Key</div>
+            <div class="section-desc" style="margin:0">串接多種 LLM 模型 (Gemini, Claude, Llama)</div>
+          </div>
+          <a class="link-btn" href="https://openrouter.ai/keys" target="_blank">取得金鑰 ↗</a>
+        </div>
+        <div class="input-group">
+          <input type="password" id="key-openrouter" placeholder="sk-or-v1-...">
+          <button class="btn-icon" onclick="toggleVis('key-openrouter')">👁</button>
+        </div>
+      </div>
+
+      <div class="section">
         <div class="section-label">Ollama 端點</div>
         <div class="section-desc">本地 LLM 推理伺服器位址</div>
         <div class="input-group">
@@ -321,7 +335,13 @@
 
       <div class="section">
         <div class="section-label">模型選擇</div>
-        <div class="chips" id="llm-models"></div>
+        <div class="chips" id="llm-models" style="margin-bottom: 12px;"></div>
+        <div id="llm-custom-model-container" style="display:none">
+          <div class="section-desc" style="margin-bottom: 6px;">自訂模型名稱 (例如: gpt-4)</div>
+          <div class="input-group">
+            <input type="text" id="llm-custom-model" placeholder="輸入模型名稱..." style="font-family: inherit;">
+          </div>
+        </div>
       </div>
 
       <div class="section">
@@ -415,10 +435,11 @@ const STT_PROVIDERS = [
 ];
 
 const LLM_PROVIDERS = [
-  { id: "openai", name: "OpenAI ChatGPT", desc: "智能修飾首選，穩定可靠", models: ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1-nano"] },
-  { id: "anthropic", name: "Anthropic Claude", desc: "高品質文字處理", models: ["claude-haiku-4-5-20251001", "claude-sonnet-4-5-20250929"] },
+  { id: "openai", name: "OpenAI ChatGPT", desc: "智能修飾首選，穩定可靠", models: ["gpt-4o-mini", "gpt-4o", "o3-mini"] },
+  { id: "openrouter", name: "OpenRouter", desc: "整合多款模型 (Gemini/Claude)", models: ["google/gemini-2.0-flash-001", "anthropic/claude-3.5-haiku", "deepseek/deepseek-chat"] },
+  { id: "anthropic", name: "Anthropic Claude", desc: "高品質文字處理", models: ["claude-3-5-sonnet-latest", "claude-3-5-haiku-latest"] },
   { id: "groq", name: "Groq (開源模型)", desc: "極快推理", models: ["llama-3.3-70b-versatile", "gemma2-9b-it"] },
-  { id: "ollama", name: "Ollama 本地", desc: "完全離線", models: ["qwen3:8b", "gemma3:4b", "llama3.2:3b"] },
+  { id: "ollama", name: "Ollama 本地", desc: "完全離線", models: ["qwen2.5:7b", "gemma2:2b"] },
 ];
 
 const HOTKEYS = [
@@ -460,7 +481,7 @@ async function init() {
     config = {
       sttProvider: "groq", llmProvider: "openai",
       sttModel: "whisper-large-v3-turbo", llmModel: "gpt-4o-mini",
-      apiKeys: { groq: "", openai: "", anthropic: "", ollama: "http://localhost:11434" },
+      apiKeys: { groq: "", openai: "", anthropic: "", openrouter: "", ollama: "http://localhost:11434" },
       hotkey: "RightAlt", language: "auto", outputMode: "clipboard",
       removeFiller: true, autoFormat: true, contextAware: true,
       dictionary: [], systemPrompt: "",
@@ -475,6 +496,7 @@ function render() {
   document.getElementById("key-groq").value = config.apiKeys?.groq || "";
   document.getElementById("key-openai").value = config.apiKeys?.openai || "";
   document.getElementById("key-anthropic").value = config.apiKeys?.anthropic || "";
+  document.getElementById("key-openrouter").value = config.apiKeys?.openrouter || "";
   document.getElementById("key-ollama").value = config.apiKeys?.ollama || "http://localhost:11434";
 
   // STT Providers
@@ -505,7 +527,28 @@ function render() {
 
   // LLM Models
   const llmP = LLM_PROVIDERS.find(p => p.id === config.llmProvider);
-  renderChips("llm-models", llmP?.models || [], config.llmModel, (m) => { config.llmModel = m; render(); });
+  renderChips("llm-models", llmP?.models || [], config.llmModel, (m) => {
+    config.llmModel = m;
+    document.getElementById("llm-custom-model").value = m;
+    render();
+  });
+
+  // Custom Model Input for OpenAI / OpenRouter
+  const customContainer = document.getElementById("llm-custom-model-container");
+  if (config.llmProvider === "openai" || config.llmProvider === "openrouter") {
+    customContainer.style.display = "block";
+    const customInput = document.getElementById("llm-custom-model");
+    if (customInput.value !== config.llmModel) {
+      customInput.value = config.llmModel;
+    }
+    customInput.oninput = (e) => {
+      config.llmModel = e.target.value;
+      // 這裡不重新 render 以免失去焦點，但要確保 state 有更新
+      // 我們會在儲存時抓取最新 state
+    };
+  } else {
+    customContainer.style.display = "none";
+  }
 
   // LLM Features
   renderFeatures();
@@ -703,6 +746,7 @@ async function saveConfig() {
     groq: document.getElementById("key-groq").value,
     openai: document.getElementById("key-openai").value,
     anthropic: document.getElementById("key-anthropic").value,
+    openrouter: document.getElementById("key-openrouter").value,
     ollama: document.getElementById("key-ollama").value,
   };
   config.systemPrompt = document.getElementById("system-prompt").value;
@@ -727,6 +771,7 @@ function exportConfig() {
     groq: document.getElementById("key-groq").value,
     openai: document.getElementById("key-openai").value,
     anthropic: document.getElementById("key-anthropic").value,
+    openrouter: document.getElementById("key-openrouter").value,
     ollama: document.getElementById("key-ollama").value,
   };
   config.systemPrompt = document.getElementById("system-prompt").value;

@@ -16,6 +16,12 @@ All notable changes to VoiceType will be documented in this file.
   - 日本語漢字 (新字體 `t2jp`)。
 - **無縫 UI 整合** - 一般設定中可即時切換變體。
 
+#### OpenRouter 支援與自訂模型功能
+- **新增 OpenRouter 引擎** - 整合 OpenRouter 聚合服務，可串接 Gemini、Claude、Llama 等多款頂尖模型。
+- **自訂模型輸入框** - 在 OpenAI 與 OpenRouter 選項下新增輸入框，允許用戶手動輸入任何支援的模型 ID（如 `gpt-4.5-preview` 或 `google/gemini-2.0-flash-001`）。
+- **擴展模型清單** - 更新預設推薦模型，包含最新的 o3-mini 與 Gemini 2.0 系列。
+- **靈活配置** - 設定檔可獨立儲存 OpenRouter API Key，並支援自訂模型字串的永久化。
+
 ### ⚙️ Engineering Improvements
 - **單元測試自動化** - 新增 `tests/test_converter.py` 進行 100% 邏輯驗證。
 - **GitHub Actions CI** - 建立 `.github/workflows/ci.yml` 執行自動化測試與 Lint。
@@ -26,9 +32,10 @@ All notable changes to VoiceType will be documented in this file.
 - `tests/test_converter.py` - [NEW] 轉換邏輯單元測試。
 - `.github/workflows/ci.yml` - [NEW] CI 自動化流程。
 - `main.py` - 整合轉換管線進入主流程。
-- `config/settings.py` - 新增 `chineseVariant` 設定欄位。
-- `ui/settings.html` - 新增變體選擇選單。
-- `README.md` - 更新功能說明。
+- `core/llm.py` - 實作 OpenRouter 支援與模型自訂邏輯。
+- `config/settings.py` - 新增 `google/openrouter` 支援欄位。
+- `ui/settings.html` - 更新 UI，新增金鑰輸入與模型自訂框。
+- `README.md` - 更新功能說明與引擎清單。
 
 ---
 

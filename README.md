@@ -39,6 +39,8 @@ VoiceType 是一個系統級的語音輸入工具。按住快捷鍵說話，放�
 - **多引擎支援** — STT 和 LLM 皆可自由選擇引擎
 - **托盤選單模型切換** — 右鍵托盤圖標即可切換 LLM 模型，無需重啟
 - **Web 設定介面** — 在瀏覽器中管理所有設定
+- **多引擎支援** — STT 和 LLM 皆可自由選擇引擎 (新增 OpenRouter 支援)
+- **自訂 LLM 模型** — 支援手動輸入模型名稱，突破預設選單限制
 - **中文繁簡轉換 (OpenCC)** — 整合 OpenCC，強制定向輸出為繁體中文、簡體中文或日文漢字
 - **系統托盤常駐** — 不佔桌面空間，背景安靜運行
 
@@ -63,6 +65,7 @@ python main.py
 |------|------|------|
 | **Groq** | 語音辨識（STT） | https://console.groq.com/keys |
 | **OpenAI** | 文字修飾（LLM） | https://platform.openai.com/api-keys |
+| **OpenRouter** | 聚合多款 LLM | https://openrouter.ai/keys |
 
 > Groq 提供免費額度，OpenAI GPT-4.1 指令遵循能力最強，兩者搭配為推薦組合。
 
@@ -106,11 +109,13 @@ python main.py
 | 引擎 | 速度 | 費用 | 說明 |
 |------|------|------|------|
 | **OpenAI GPT-4.1** | 快 | $2/$8 per 1M tokens | 推薦，指令遵循能力最強 |
+| **OpenRouter** | 依模型 | 依模型 | **新支援**，可串接 Gemini 2.0, Claude 3.5 等 |
 | OpenAI GPT-4.1-mini | 快 | ~$6 per 1M tokens | 較便宜但能力稍弱 |
 | OpenAI GPT-4o | 快 | $2.5/$10 per 1M tokens | 較舊，將於 2026-02-13 退役 |
 | Anthropic Claude | 快 | 較高 | 高品質文字處理 |
 | Groq | 極快 | 幾乎免費 | 上下文較短（8K-32K） |
 | Ollama | 依硬體 | 免費 | 完全離線 |
+| **自訂模型** | - | - | 支援手動輸入模型 ID (如 `gpt-4-turbo`) |
 
 ### 文字轉換 (OpenCC)
 
