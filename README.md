@@ -174,4 +174,12 @@ python build.py
 
 ## License
 
-MIT
+本專案採用 **MIT License** 授權。
+
+### 第三方組件聲明 (Third-party Licenses)
+
+本專案使用了以下開源組件，其授權條款如下：
+
+- **OpenCC (Open Chinese Convert)**: 採用 [Apache License 2.0](https://github.com/BYVoid/OpenCC/blob/master/LICENSE) 授權。
+- **opencc-python-reimplemented**: 採用 [Apache License 2.0](https://github.com/yichen0831/opencc-python/blob/master/LICENSE) 授權。
+- **其他相依套件** (如 OpenAI SDK, pystray 等): 分別採用其各自的 MIT 或 BSD 授權。
