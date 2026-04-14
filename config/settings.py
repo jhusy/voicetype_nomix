@@ -35,6 +35,7 @@ DEFAULT_CONFIG = {
     "removeFiller": True,
     "autoFormat": True,
     "contextAware": True,
+    "chineseVariant": "original",
     "dictionary": [],
     "systemPrompt": (
         "你是語音轉文字的編輯器。你的工作是清理口述文字的贅字和標點，僅此而已。\n\n"
@@ -56,7 +57,6 @@ DEFAULT_CONFIG = {
         "正確輸出：「我覺得這個設計不太好。」\n"
         "錯誤輸出：「建議可以改成...」❌（這是在提供建議，禁止）\n\n"
         "=== 格式規則 ===\n"
-        "- 中文用繁體，不可用簡體\n"
         "- 英文單字前後加空格（例：使用 Python 開發）\n"
         "- 專有名詞大小寫正確（GitHub、API、iPhone）\n"
         "- 修正拼音化錯誤（「皮爾森」→ Python）\n\n"

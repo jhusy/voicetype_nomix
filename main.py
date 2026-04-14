@@ -33,6 +33,7 @@ from core.recorder import AudioRecorder
 from core.stt import SpeechToText
 from core.llm import LLMProcessor
 from core.injector import TextInjector
+from core.converter import TextConverter
 from core.hotkey import HotkeyManager
 from core.tray_icons import create_tray_icon
 from core.sounds import play_start, play_stop
@@ -60,6 +61,7 @@ class VoiceType:
         self.recorder = AudioRecorder()
         self.stt = SpeechToText(self.settings)
         self.llm = LLMProcessor(self.settings)
+        self.converter = TextConverter(self.settings)
         self.injector = TextInjector(self.settings)
         self.hotkey = HotkeyManager(self.settings)
         self._state_lock = threading.RLock()  # 執行緒安全狀態鎖
@@ -177,6 +179,13 @@ class VoiceType:
             llm_time = time.time() - t1
             logger.info("Polished (%.1fs): %s", llm_time, polished)
 
+            # 步驟 2.5：中文繁簡轉換 (強制轉換)
+            t2 = time.time()
+            converted = self.converter.convert(polished)
+            conv_time = time.time() - t2
+            if converted != polished:
+                logger.info("Converted (%.3fs): %s", conv_time, converted)
+            
             # ==========================================
             # 關鍵修復：恢復焦點 BEFORE unhook
             # ==========================================
@@ -202,7 +211,7 @@ class VoiceType:
             time.sleep(0.05)  # 短暫暫停
 
             # 步驟 6：注入文字
-            self.injector.inject(polished)
+            self.injector.inject(converted)
 
             # 步驟 7：立即重新註冊 hook
             self.hotkey.register(
@@ -436,6 +445,7 @@ class VoiceType:
         self.settings.load()
         self.stt = SpeechToText(self.settings)
         self.llm = LLMProcessor(self.settings)
+        self.converter = TextConverter(self.settings)
         self.injector = TextInjector(self.settings)
         # 重新註冊快捷鍵
         self.hotkey.stop()

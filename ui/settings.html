@@ -382,6 +382,12 @@
         <div class="section-label">文字輸出方式</div>
         <div id="output-modes"></div>
       </div>
+
+      <div class="section">
+        <div class="section-label">中文輸出變體 (強制轉換)</div>
+        <div class="section-desc">在 LLM 修飾後強制套用 OpenCC 轉換，確保字體一致性</div>
+        <div id="chinese-variants"></div>
+      </div>
     </div>
 
   </div>
@@ -430,6 +436,15 @@ const SUGGEST_WORDS = ["BNI", "n8n", "Activepieces", "LINE", "RAG", "Whisper", "
 const OUTPUT_MODES = [
   { id: "clipboard", name: "剪貼簿 + 貼上", desc: "複製到剪貼簿後模擬 Ctrl+V（推薦，支援中文）" },
   { id: "keyboard", name: "模擬鍵盤輸入", desc: "逐字模擬按鍵輸入（僅支援英文字元）" },
+];
+
+const CHINESE_VARIANTS = [
+  { id: "original", name: "不轉換 (原始)", desc: "保持 LLM 輸出的原始狀態" },
+  { id: "s2t", name: "繁體中文 (標準)", desc: "標準簡轉繁 (s2t)" },
+  { id: "s2twp", name: "繁體中文 (台灣用語)", desc: "簡轉繁 + 慣用語優化 (s2twp)" },
+  { id: "s2hk", name: "繁體中文 (香港標準)", desc: "簡轉繁 (s2hk)" },
+  { id: "t2s", name: "簡體中文 (標準)", desc: "標準繁轉簡 (t2s)" },
+  { id: "t2jp", name: "日本語漢字 (新字體)", desc: "繁體轉日文漢字 (t2jp)" },
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -503,6 +518,9 @@ function render() {
 
   // Output modes
   renderProviders("output-modes", OUTPUT_MODES, config.outputMode, (id) => { config.outputMode = id; render(); });
+
+  // Chinese Variants
+  renderProviders("chinese-variants", CHINESE_VARIANTS, config.chineseVariant || "original", (id) => { config.chineseVariant = id; render(); });
 }
 
 function renderProviders(containerId, providers, activeId, onClick) {
