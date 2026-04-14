@@ -21,3 +21,8 @@ config.json
 # OS
 Thumbs.db
 Desktop.ini
+
+# OpenCC
+OpenCC-master/
+
+.agent/
