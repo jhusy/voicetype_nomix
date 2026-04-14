@@ -2,7 +2,37 @@
 
 All notable changes to VoiceType will be documented in this file.
 
-## [Unreleased] - 2026-03-03
+## [Unreleased] - 2026-04-14
+
+### ✨ New Features
+
+#### 中文繁簡轉換 (OpenCC) 強制模式
+- **整合 OpenCC 轉換引擎** - 在文字注入前強制套用轉換，確保輸出字體一致性。
+- **支援多種變體**：
+  - 繁體中文 (台灣用語優化 `s2twp`)：具備慣用語轉換（如「軟件」->「軟體」）。
+  - 繁體中文 (標準 `s2t`)。
+  - 繁體中文 (香港標準 `s2hk`)。
+  - 簡體中文 (標準 `t2s`)。
+  - 日本語漢字 (新字體 `t2jp`)。
+- **無縫 UI 整合** - 一般設定中可即時切換變體。
+
+### ⚙️ Engineering Improvements
+- **單元測試自動化** - 新增 `tests/test_converter.py` 進行 100% 邏輯驗證。
+- **GitHub Actions CI** - 建立 `.github/workflows/ci.yml` 執行自動化測試與 Lint。
+- **Git 工作流優化** - 完善 `.gitignore` 並保持 Commit History 潔淨。
+
+### 📝 Changed Files
+- `core/converter.py` - [NEW] OpenCC 轉換封裝。
+- `tests/test_converter.py` - [NEW] 轉換邏輯單元測試。
+- `.github/workflows/ci.yml` - [NEW] CI 自動化流程。
+- `main.py` - 整合轉換管線進入主流程。
+- `config/settings.py` - 新增 `chineseVariant` 設定欄位。
+- `ui/settings.html` - 新增變體選擇選單。
+- `README.md` - 更新功能說明。
+
+---
+
+## [0.1.0] - 2026-03-03
 
 ### 🎯 Major Improvements
 
