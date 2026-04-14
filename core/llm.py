@@ -39,6 +39,8 @@ class LLMProcessor:
                 return self._polish_groq(raw_text, cfg)
             elif provider == "ollama":
                 return self._polish_ollama(raw_text, cfg)
+            elif provider == "openrouter":
+                return self._polish_openrouter(raw_text, cfg)
             else:
                 logger.warning("未知 LLM 引擎 %s，直接輸出原文", provider)
                 return raw_text.strip()
@@ -192,3 +194,37 @@ class LLMProcessor:
         response.raise_for_status()
         data = response.json()
         return data["message"]["content"].strip()
+
+    # ── OpenRouter（OpenAI 相容）──────────────────────────────────────────────
+
+    def _polish_openrouter(self, raw_text: str, cfg: dict) -> str:
+        from openai import OpenAI
+
+        api_key = self.settings.get_api_key("openrouter")
+        if not api_key:
+            raise ValueError("OpenRouter API Key 未設定")
+
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://openrouter.ai/api/v1",
+        )
+        # OpenRouter 慣用模型格式為 "provider/model"
+        model = cfg.get("llmModel", "google/gemini-2.0-flash-001")
+        system_prompt = self._get_system_prompt(cfg)
+
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": raw_text},
+            ],
+            temperature=0.1,
+            max_tokens=2048,
+            # OpenRouter 推薦的額外參數
+            extra_headers={
+                "HTTP-Referer": "https://github.com/jhusy/voicetype_nomix",
+                "X-Title": "VoiceType",
+            },
+        )
+
+        return response.choices[0].message.content.strip()

@@ -25,4 +25,7 @@ Desktop.ini
 # OpenCC
 OpenCC-master/
 
+# Agent Meta
 .agent/
+.agents/
+scratch/
